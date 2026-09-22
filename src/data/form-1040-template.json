@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "form-1040-2025-demo",
+  "name": "2025 Form 1040 — demo mapping",
+  "form": {
+    "id": "f1040-2025",
+    "title": "U.S. Individual Income Tax Return",
+    "taxYear": 2025,
+    "source": {
+      "kind": "bundled",
+      "path": "/forms/f1040-2025.pdf"
+    },
+    "pageCount": 2
+  },
+  "fields": [
+    {
+      "id": "taxpayer-first-name",
+      "name": "Taxpayer first name",
+      "page": 1,
+      "rect": { "x": 0.074, "y": 0.115, "width": 0.23, "height": 0.021 },
+      "type": "text",
+      "binding": { "pointer": "/taxpayer/name/first", "fallback": "" },
+      "format": { "locale": "en-US", "currency": "USD", "dateStyle": "short", "trueValue": "X", "falseValue": "" },
+      "appearance": { "fontFamily": "Helvetica", "fontSize": 10, "color": "#111111", "align": "left", "verticalAlign": "middle", "overflow": "shrink", "padding": 2 },
+      "required": true,
+      "hidden": false
+    },
+    {
+      "id": "taxpayer-last-name",
+      "name": "Taxpayer last name",
+      "page": 1,
+      "rect": { "x": 0.31, "y": 0.115, "width": 0.295, "height": 0.021 },
+      "type": "text",
+      "binding": { "pointer": "/taxpayer/name/last", "fallback": "" },
+      "format": { "locale": "en-US", "currency": "USD", "dateStyle": "short", "trueValue": "X", "falseValue": "" },
+      "appearance": { "fontFamily": "Helvetica", "fontSize": 10, "color": "#111111", "align": "left", "verticalAlign": "middle", "overflow": "shrink", "padding": 2 },
+      "required": true,
+      "hidden": false
+    },
+    {
+      "id": "taxpayer-ssn",
+      "name": "Taxpayer SSN",
+      "page": 1,
+      "rect": { "x": 0.755, "y": 0.115, "width": 0.18, "height": 0.021 },
+      "type": "ssn",
+      "binding": { "pointer": "/taxpayer/ssn", "fallback": "" },
+      "format": { "locale": "en-US", "currency": "USD", "dateStyle": "short", "trueValue": "X", "falseValue": "" },
+      "appearance": { "fontFamily": "Courier", "fontSize": 10, "color": "#111111", "align": "center", "verticalAlign": "middle", "overflow": "shrink", "padding": 2 },
+      "required": true,
+      "hidden": false
+    },
+    {
+      "id": "wages",
+      "name": "Wages, salaries, tips",
+      "page": 1,
+      "rect": { "x": 0.797, "y": 0.668, "width": 0.136, "height": 0.019 },
+      "type": "currency",
+      "binding": { "pointer": "/income/w2s/0/wages", "fallback": "0" },
+      "format": { "locale": "en-US", "currency": "USD", "dateStyle": "short", "trueValue": "X", "falseValue": "" },
+      "appearance": { "fontFamily": "Helvetica", "fontSize": 9, "color": "#111111", "align": "right", "verticalAlign": "middle", "overflow": "shrink", "padding": 2 },
+      "required": true,
+      "hidden": false
+    }
+  ],
+  "createdAt": "2026-09-23T00:00:00.000Z",
+  "updatedAt": "2026-09-23T00:00:00.000Z"
+}
