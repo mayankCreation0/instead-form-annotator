@@ -17,6 +17,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
+// Checkbox cells on a 1040 are only a few pixels tall at default zoom.
+const MIN_DRAW_PX = 4;
+
 type PdfViewerProps = {
   file: string | Blob | ArrayBuffer | null;
   onDocumentLoad: (pages: number) => void;
@@ -149,6 +152,7 @@ export default function PdfViewer({ file, onDocumentLoad }: PdfViewerProps) {
   const selectField = useAnnotationStore((state) => state.selectField);
   const [aspect, setAspect] = useState(11 / 8.5);
   const [draft, setDraft] = useState<DraftRect | null>(null);
+  const [lastSurface, setLastSurface] = useState(`${mode}:${currentPage}`);
   const layerRef = useRef<HTMLDivElement>(null);
   const pageWidth = Math.round(680 * zoom);
   const pageHeight = Math.round(pageWidth * aspect);
@@ -168,6 +172,12 @@ export default function PdfViewer({ file, onDocumentLoad }: PdfViewerProps) {
     const viewport = page.getViewport({ scale: 1 });
     setAspect(viewport.height / viewport.width);
   }, []);
+
+  const surfaceKey = `${mode}:${currentPage}`;
+  if (surfaceKey !== lastSurface) {
+    setLastSurface(surfaceKey);
+    setDraft(null);
+  }
 
   if (!file) {
     return <div className="empty-canvas">Choose a PDF to begin.</div>;
@@ -226,12 +236,14 @@ export default function PdfViewer({ file, onDocumentLoad }: PdfViewerProps) {
           }}
           onPointerUp={(event) => {
             if (!draft) return;
-            event.currentTarget.releasePointerCapture(event.pointerId);
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+              event.currentTarget.releasePointerCapture(event.pointerId);
+            }
             const x = Math.min(draft.startX, draft.x);
             const y = Math.min(draft.startY, draft.y);
             const width = Math.abs(draft.x - draft.startX);
             const height = Math.abs(draft.y - draft.startY);
-            if (width >= 12 && height >= 10) {
+            if (width >= MIN_DRAW_PX && height >= MIN_DRAW_PX) {
               addField(currentPage, {
                 x: x / pageWidth,
                 y: y / pageHeight,
@@ -241,6 +253,7 @@ export default function PdfViewer({ file, onDocumentLoad }: PdfViewerProps) {
             }
             setDraft(null);
           }}
+          onPointerCancel={() => setDraft(null)}
         >
           {pageFields.map((field) => (
             <FieldBox
