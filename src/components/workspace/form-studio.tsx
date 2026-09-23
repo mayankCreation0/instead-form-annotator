@@ -24,6 +24,7 @@ import {
   useState,
 } from "react";
 import { listDataLeaves } from "@/lib/bindings/json-pointer";
+import { resolveFieldValue } from "@/lib/bindings/formatters";
 import { clampNormalizedRect } from "@/lib/pdf/coordinates";
 import { createFilledPdf, downloadBytes } from "@/lib/pdf/export-pdf";
 import { savePdf, loadPdf } from "@/lib/storage/pdf-storage";
@@ -60,6 +61,7 @@ function FieldList() {
   const fields = useAnnotationStore((state) => state.template.fields);
   const selectedFieldId = useAnnotationStore((state) => state.selectedFieldId);
   const currentPage = useAnnotationStore((state) => state.currentPage);
+  const data = useAnnotationStore((state) => state.data);
   const selectField = useAnnotationStore((state) => state.selectField);
   const setCurrentPage = useAnnotationStore((state) => state.setCurrentPage);
 
@@ -72,28 +74,37 @@ function FieldList() {
         </div>
       </div>
       <ul className="field-list">
-        {fields.map((field) => (
-          <li key={field.id}>
-            <button
-              type="button"
-              className="field-row"
-              aria-current={selectedFieldId === field.id}
-              onClick={() => {
-                if (field.page !== currentPage) setCurrentPage(field.page);
-                selectField(field.id);
-              }}
-            >
-              <span className="field-dot" />
-              <span>
-                <span className="field-row-name">{field.name}</span>
-                <span className="field-row-meta">
-                  P{field.page} · {field.binding.pointer}
+        {fields.map((field) => {
+          const resolved = resolveFieldValue(field, data);
+          return (
+            <li key={field.id}>
+              <button
+                type="button"
+                className="field-row"
+                aria-current={selectedFieldId === field.id}
+                onClick={() => {
+                  if (field.page !== currentPage) setCurrentPage(field.page);
+                  selectField(field.id);
+                }}
+              >
+                <span
+                  className={`field-dot ${resolved.error ? "field-dot-error" : ""}`}
+                />
+                <span>
+                  <span className="field-row-name">{field.name}</span>
+                  <span className="field-row-meta">
+                    P{field.page} · {field.binding.pointer}
+                  </span>
                 </span>
-              </span>
-              <span className="field-badge">{field.type}</span>
-            </button>
-          </li>
-        ))}
+                <span
+                  className={`field-badge ${resolved.error ? "field-badge-error" : ""}`}
+                >
+                  {resolved.error ? "unresolved" : field.type}
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
       {fields.length === 0 && (
         <div className="empty-inspector">
@@ -114,6 +125,7 @@ function Inspector() {
   const duplicateField = useAnnotationStore((state) => state.duplicateField);
   const leaves = useMemo(() => listDataLeaves(data), [data]);
   const field = template.fields.find((item) => item.id === selectedFieldId);
+  const resolved = field ? resolveFieldValue(field, data) : null;
 
   if (!field) {
     return (
@@ -166,7 +178,33 @@ function Inspector() {
       </div>
 
       <section className="inspector-section">
-        <span className="section-label">Identity & binding</span>
+        <span className="section-label">Binding</span>
+        <div className="binding-card">
+          <div className="binding-row">
+            <span className="binding-key">Source</span>
+            <code className="binding-value">{field.binding.pointer}</code>
+          </div>
+          <div className="binding-row">
+            <span className="binding-key">Value</span>
+            <span className="binding-value">
+              {resolved?.error ? "—" : resolved?.text || "(empty)"}
+            </span>
+          </div>
+          {resolved?.error ? (
+            <div className="binding-error" role="status">
+              Binding could not be resolved
+              <span className="binding-error-detail">{resolved.error}</span>
+            </div>
+          ) : (
+            <p className="binding-hint">
+              Resolved from current tax data at render time.
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section className="inspector-section">
+        <span className="section-label">Identity</span>
         <div className="form-grid">
           <div className="form-field form-field-full">
             <label htmlFor="field-name">Display name</label>
@@ -410,7 +448,9 @@ function DataWorkspace({ notify }: { notify: (message: string) => void }) {
         <div className="eyebrow">Data</div>
         <h1 className="editorial-heading">Taxpayer data</h1>
         <p className="supporting-copy">
-          JSON used by the field bindings. Edits stay in this browser.
+          Annotations reference data using JSON Pointer paths. Values are
+          resolved from the current tax data at render time — edit a number
+          here, then open Preview to see it on the form.
         </p>
         <textarea
           className="textarea"
@@ -610,7 +650,7 @@ export default function FormStudio() {
             </div>
           </div>
           <nav className="mode-switcher" aria-label="Workspace mode">
-            {(["annotate", "preview", "data"] as const).map((item) => (
+            {(["data", "annotate", "preview"] as const).map((item) => (
               <button
                 key={item}
                 type="button"

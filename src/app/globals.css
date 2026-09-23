@@ -78,9 +78,11 @@ button,
 }
 
 .app-shell {
-  min-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   display: grid;
   grid-template-rows: 64px minmax(0, 1fr);
+  overflow: hidden;
 }
 
 .topbar {
@@ -304,6 +306,10 @@ button,
   background: var(--lime-strong);
 }
 
+.field-dot-error {
+  background: var(--danger);
+}
+
 .field-row-name {
   overflow: hidden;
   font-size: 13px;
@@ -325,6 +331,11 @@ button,
   padding: 4px 7px;
   font-size: 9px;
   font-weight: 700;
+}
+
+.field-badge-error {
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .canvas-column {
@@ -369,8 +380,10 @@ button,
 
 .pdf-scroll {
   min-height: 0;
+  max-height: 100%;
   overflow: auto;
-  padding: 42px max(30px, calc((100% - 800px) / 2));
+  overscroll-behavior: contain;
+  padding: 24px max(20px, calc((100% - 760px) / 2)) 32px;
 }
 
 .pdf-page-shell {
@@ -457,6 +470,74 @@ button,
   overflow: hidden;
   line-height: 1;
   white-space: nowrap;
+}
+
+.field-box-value-error {
+  color: var(--danger);
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.binding-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f7f6ef;
+  padding: 12px;
+}
+
+.binding-row {
+  display: grid;
+  gap: 4px;
+}
+
+.binding-key {
+  color: var(--muted);
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.binding-value {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+code.binding-value {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.binding-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.binding-error {
+  display: grid;
+  gap: 4px;
+  border-radius: 8px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.binding-error-detail {
+  color: #7a271a;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 500;
 }
 
 .empty-canvas {

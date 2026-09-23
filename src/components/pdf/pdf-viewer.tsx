@@ -62,21 +62,25 @@ function FieldBox({
       {!preview && <span className="field-box-label">{field.name}</span>}
       {preview && (
         <span
-          className="field-box-value"
-          style={{
-            color: field.appearance.color,
-            fontFamily:
-              field.appearance.fontFamily === "Courier"
-                ? "var(--font-mono)"
-                : field.appearance.fontFamily === "TimesRoman"
-                  ? "Georgia, serif"
-                  : "Arial, sans-serif",
-            fontSize: field.appearance.fontSize,
-            padding: field.appearance.padding,
-            textAlign: field.appearance.align,
-          }}
+          className={`field-box-value ${result.error ? "field-box-value-error" : ""}`}
+          style={
+            result.error
+              ? undefined
+              : {
+                  color: field.appearance.color,
+                  fontFamily:
+                    field.appearance.fontFamily === "Courier"
+                      ? "var(--font-mono)"
+                      : field.appearance.fontFamily === "TimesRoman"
+                        ? "Georgia, serif"
+                        : "Arial, sans-serif",
+                  fontSize: field.appearance.fontSize,
+                  padding: field.appearance.padding,
+                  textAlign: field.appearance.align,
+                }
+          }
         >
-          {result.text}
+          {result.error ? "⚠ unresolved" : result.text}
         </span>
       )}
     </>
@@ -86,7 +90,11 @@ function FieldBox({
     return (
       <div
         className={`field-box preview ${result.error ? "error" : ""}`}
-        title={result.error}
+        title={
+          result.error
+            ? `Binding could not be resolved: ${result.error}`
+            : undefined
+        }
         style={{ left, top, width, height }}
       >
         {content}
@@ -126,6 +134,11 @@ function FieldBox({
       }}
       className={`field-box ${isSelected ? "selected" : ""} ${result.error ? "error" : ""}`}
       style={{ position: "absolute" }}
+      title={
+        result.error
+          ? `Binding could not be resolved: ${result.error}`
+          : undefined
+      }
       resizeHandleStyles={{
         bottomRight: {
           width: 9,

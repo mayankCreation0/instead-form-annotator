@@ -3,7 +3,7 @@ import { listDataLeaves, resolvePointer } from "./json-pointer";
 
 describe("resolvePointer", () => {
   const data = {
-    taxpayer: { name: "Jordan", "a/b": "escaped" },
+    taxpayer: { name: "Mayank", "a/b": "escaped" },
     wages: [{ amount: 120000 }],
     "til~de": true,
   };

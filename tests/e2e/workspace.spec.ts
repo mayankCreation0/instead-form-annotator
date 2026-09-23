@@ -27,7 +27,14 @@ test("opens the bundled Form 1040 and exposes all workspace modes", async ({
 
 test("edits a binding and exports template JSON", async ({ page }) => {
   await page.getByText("Wages, salaries, tips").first().click();
+  await expect(page.getByText("Binding", { exact: true })).toBeVisible();
+  await expect(page.getByText("/income/w2s/0/wages").first()).toBeVisible();
+  await expect(page.getByText("$128,450.75").first()).toBeVisible();
+
   const pointer = page.getByLabel("JSON Pointer");
+  await pointer.fill("/income/w2s/99/wages");
+  await expect(page.getByText("Binding could not be resolved")).toBeVisible();
+
   await pointer.fill("/income/interest");
   await expect(pointer).toHaveValue("/income/interest");
 

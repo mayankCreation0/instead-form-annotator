@@ -1,23 +1,23 @@
 {
   "taxpayer": {
     "name": {
-      "first": "Jordan",
-      "last": "Rivera"
+      "first": "Mayank",
+      "last": "Raj"
     },
     "ssn": "123456789",
-    "occupation": "Product designer"
+    "occupation": "Software engineer"
   },
   "spouse": {
     "name": {
-      "first": "Taylor",
-      "last": "Rivera"
+      "first": "Kylie",
+      "last": "Jenner"
     },
     "ssn": "987654321"
   },
   "filingStatus": "marriedFilingJointly",
   "dependents": [
     {
-      "name": "Avery Rivera",
+      "name": "Avery Raj",
       "ssn": "456789123",
       "relationship": "Child",
       "childTaxCredit": true
