@@ -1,0 +1,40 @@
+{
+  "taxpayer": {
+    "name": {
+      "first": "Jordan",
+      "last": "Rivera"
+    },
+    "ssn": "123456789",
+    "occupation": "Product designer"
+  },
+  "spouse": {
+    "name": {
+      "first": "Taylor",
+      "last": "Rivera"
+    },
+    "ssn": "987654321"
+  },
+  "filingStatus": "marriedFilingJointly",
+  "dependents": [
+    {
+      "name": "Avery Rivera",
+      "ssn": "456789123",
+      "relationship": "Child",
+      "childTaxCredit": true
+    }
+  ],
+  "income": {
+    "w2s": [
+      {
+        "employer": "Northstar Studio, Inc.",
+        "wages": 128450.75,
+        "federalWithholding": 21780.5
+      }
+    ],
+    "interest": 1850.25,
+    "total": 130301
+  },
+  "payments": {
+    "federalWithholding": 21780.5
+  }
+}
