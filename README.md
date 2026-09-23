@@ -1,32 +1,19 @@
 # Form Studio
 
-A local-first tax-form annotation studio built for the Instead full-stack
-engineering exercise. It maps deeply nested taxpayer data onto precise PDF
-regions, previews the result, and exports a flattened, filled PDF.
+Annotate fields on a tax PDF, bind them to nested JSON, preview the fill, and
+export a flattened PDF. Built for the Instead full-stack exercise.
 
-## What it demonstrates
+## Run
 
-- A versioned JSON annotation specification with normalized, zoom-independent
-  geometry.
-- RFC 6901 JSON Pointer bindings such as `/income/w2s/0/wages`.
-- Multipage PDF viewing, upload, draw/move/resize interactions, and live
-  formatting.
-- Browser-local persistence, validated JSON import/export, undo/redo, and
-  flattened PDF download.
-- A typed Next.js validation route that never receives tax documents.
-- Unit and browser smoke tests around the risky parts of the system.
-
-## Run locally
-
-Requirements: Node 20.16+ and npm.
+Node 20.16+ and npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`. The official final 2025 IRS Form 1040 and sample
-taxpayer data load automatically.
+Open `http://localhost:3000`. Loads the 2025 Form 1040 and sample taxpayer
+data by default. You can also upload your own PDF.
 
 ```bash
 npm run lint
@@ -37,75 +24,44 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-## Architecture
+## How it works
 
-The app has three independent inputs:
+Three inputs:
 
-1. A bundled or user-selected PDF.
-2. A versioned annotation template.
-3. Arbitrarily nested taxpayer JSON.
+1. PDF (bundled 1040 or upload)
+2. Annotation template (where boxes are + how to format values)
+3. Taxpayer JSON (arbitrary nesting)
 
-PDF.js renders the source PDF. A normalized HTML overlay supplies field
-interactions. The binding engine resolves JSON Pointers and applies shared
-formatters. `pdf-lib` then converts normalized top-left coordinates to PDF
-points and burns the same formatted values into a downloadable PDF.
+PDF.js draws the page. An HTML overlay handles draw/move/resize. Bindings use
+JSON Pointers (`/income/w2s/0/wages`). Preview and export share the same
+formatters. `pdf-lib` burns the text into a downloadable PDF.
 
-Important modules:
+| Path | Role |
+|------|------|
+| `src/lib/schema/` | Template schema (Zod) |
+| `src/lib/bindings/` | Pointer resolve + formatting |
+| `src/lib/pdf/` | Coordinates + export |
+| `src/store/` | State, undo/redo, localStorage |
+| `docs/annotation-spec.md` | Spec details |
 
-- `src/lib/schema/annotation-schema.ts` — runtime and TypeScript contract.
-- `src/lib/bindings/` — JSON Pointer resolution and value formatting.
-- `src/lib/pdf/` — coordinate conversion and flattened PDF generation.
-- `src/store/annotation-store.ts` — workspace state, history, and recovery.
-- `docs/annotation-spec.md` — complete specification and extension points.
+Everything stays in the browser. IndexedDB holds uploaded PDFs; localStorage
+holds the template. There's a `/api/templates/validate` route if you want
+server-side schema checks — it never sees the PDF or return data.
 
-## Privacy model
+## Decisions I made
 
-PDFs and taxpayer JSON are processed in the browser. Uploaded PDFs are stored
-in IndexedDB, project metadata is stored in local storage, and no tax document
-is sent to the server. The API validation route accepts template metadata only.
-JSON and PDF downloads happen directly in the browser.
+- **Normalized 0–1 boxes** instead of absolute points so zoom / page size
+  don't break mappings.
+- **JSON Pointer** over dotted paths — handles array indexes and keys with
+  dots cleanly.
+- **Draw text with pdf-lib** instead of filling AcroForm fields — works on
+  forms that don't ship widgets (most IRS PDFs year to year).
+- **No backend for documents** — fine for the exercise; a real product would
+  need auth + encrypted storage.
 
-For a production tax product, browser data would additionally need an explicit
-retention policy, encrypted storage, content-security policy hardening, audit
-events, and reviewed telemetry that cannot capture taxpayer values.
+Not built yet: repeat groups (dependents / W-2s), conditional fields, shared
+templates, OCR suggestions.
 
-## Design rationale
+## Deploy
 
-Instead is the brand system of record: sand and white surfaces, charcoal
-chrome, lime activity signals, Lato product typography, and Libre Baskerville
-for editorial moments. Neo Mirai contributes only instrument-like craft:
-hairline grids, mono coordinate labels, cardless inspector cells, and restrained
-placement motion.
-
-The result stays dense enough for professional form work while avoiding a
-generic admin dashboard.
-
-## Tradeoffs and next steps
-
-- **Browser-only PDF work:** protects taxpayer data and deploys cleanly to
-  Vercel, but large scanned PDFs are constrained by device memory.
-- **Drawn overlays over AcroForm fields:** works across arbitrary forms and
-  annual revisions, but does not preserve native PDF widgets.
-- **Standard PDF fonts:** guarantees portable export; exact browser/PDF font
-  metric parity is approximate.
-- **Local persistence:** ideal for the exercise; production collaboration
-  needs encrypted server storage, authentication, roles, and conflict handling.
-
-Next extensions would add repeatable dependent/W-2 groups, conditional fields,
-template migrations, OCR-assisted box suggestions, comments/review status,
-and an immutable audit trail.
-
-## Five-minute walkthrough
-
-1. **0:00–0:35** — Explain template vs taxpayer data vs source PDF.
-2. **0:35–1:30** — Draw, move, and resize a field; show normalized geometry.
-3. **1:30–2:30** — Bind it to `/income/w2s/0/wages` and select currency.
-4. **2:30–3:20** — Edit nested JSON and switch to Preview.
-5. **3:20–4:10** — Export/import template JSON and download the filled PDF.
-6. **4:10–5:00** — Cover privacy, coordinate conversion, tests, and repeat
-   groups/collaboration as next steps.
-
-## Deployment
-
-The application is compatible with a standard Vercel Next.js deployment. No
-database, environment variables, or external PDF service is required.
+Standard Vercel Next.js deploy. No env vars or database required.

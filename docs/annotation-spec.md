@@ -1,10 +1,9 @@
-# Form Studio annotation specification
+# Annotation spec
 
 Version `1.0.0`
 
-This specification separates a reusable form template from a taxpayer data
-instance. A template describes where values go and how they are rendered. It
-does not contain a PDF or require taxpayer data to have a fixed shape.
+Template = where values go on the form + how to format them.
+Taxpayer data is separate and can be any nested JSON shape.
 
 ## Document model
 
@@ -87,20 +86,18 @@ US Letter or custom page sizes. Rotation is read from each PDF page at export.
 
 Standard PDF fonts are used so exports require no external font files.
 
-## Validation and compatibility
+## Validation
 
-Imports are parsed with the same Zod schema used by the typed application and
-the `/api/templates/validate` route. Unknown schema versions are rejected
-rather than silently misinterpreted. A future migration registry can transform
-older known versions before validation.
+Imports go through the same Zod schema the app uses. Unknown
+`schemaVersion` values are rejected. `/api/templates/validate` exposes the
+same check over HTTP if you need it.
 
-## Intentionally deferred
+## Not built yet
 
-- Repeat groups for dependents, W-2s, and schedule rows.
-- Conditional fields based on filing status or entity type.
-- Shared template storage, roles, comments, and audit history.
-- Optical field detection and suggested bindings.
-- Cryptographic signatures and native AcroForm writing.
+- Repeat groups (dependents, W-2s)
+- Conditional fields
+- Shared templates / comments / audit trail
+- OCR field detection
+- Writing into native AcroForm widgets
 
-These can extend the template without changing normalized geometry or JSON
-Pointer semantics.
+Geometry + JSON Pointer bindings should still work if those are added later.

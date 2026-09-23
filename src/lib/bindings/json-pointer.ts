@@ -20,7 +20,7 @@ export function resolvePointer(
     const token = decodeToken(rawToken);
     if (Array.isArray(current)) {
       if (!/^(0|[1-9]\d*)$/.test(token)) {
-        return { ok: false, error: `Expected an array index at “${token}”` };
+        return { ok: false, error: `Expected an array index at "${token}"` };
       }
       const index = Number(token);
       if (index >= current.length) {
@@ -33,13 +33,13 @@ export function resolvePointer(
     if (current !== null && typeof current === "object") {
       const record = current as Record<string, unknown>;
       if (!(token in record)) {
-        return { ok: false, error: `Property “${token}” was not found` };
+        return { ok: false, error: `Property "${token}" was not found` };
       }
       current = record[token];
       continue;
     }
 
-    return { ok: false, error: `Cannot read “${token}” from a scalar value` };
+    return { ok: false, error: `Cannot read "${token}" from a scalar value` };
   }
 
   return { ok: true, value: current };

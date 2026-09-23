@@ -23,10 +23,10 @@ describe("resolvePointer", () => {
     expect(resolvePointer(data, "/til~0de")).toEqual({ ok: true, value: true });
   });
 
-  it("returns an actionable missing-property error", () => {
+  it("errors when a property is missing", () => {
     expect(resolvePointer(data, "/taxpayer/ssn")).toEqual({
       ok: false,
-      error: "Property “ssn” was not found",
+      error: 'Property "ssn" was not found',
     });
   });
 });

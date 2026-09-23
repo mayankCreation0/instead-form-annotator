@@ -7,7 +7,7 @@ import { formatFieldValue, resolveFieldValue } from "./formatters";
 const parsed = annotationTemplateSchema.parse(template);
 
 describe("field formatting", () => {
-  it("formats a deeply nested currency binding", () => {
+  it("formats nested currency values", () => {
     const field = parsed.fields.find((item) => item.id === "wages")!;
     expect(resolveFieldValue(field, data).text).toBe("$128,450.75");
   });
@@ -17,7 +17,7 @@ describe("field formatting", () => {
     expect(formatFieldValue(field, "123456789")).toBe("123-45-6789");
   });
 
-  it("uses fallback and surfaces resolution errors", () => {
+  it("falls back when the pointer misses", () => {
     const field = parsed.fields[0];
     const result = resolveFieldValue(field, {});
     expect(result.text).toBe("");

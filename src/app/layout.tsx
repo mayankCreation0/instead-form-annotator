@@ -21,9 +21,8 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Form Studio — Tax form annotation",
-  description:
-    "Map structured taxpayer data to precise, reusable PDF form fields.",
+  title: "Form Studio",
+  description: "Annotate tax PDF fields and bind them to nested JSON.",
 };
 
 export default function RootLayout({

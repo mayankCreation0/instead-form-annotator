@@ -39,7 +39,7 @@ import {
 
 const PdfViewer = dynamic(() => import("@/components/pdf/pdf-viewer"), {
   ssr: false,
-  loading: () => <div className="empty-canvas">Preparing PDF engine…</div>,
+  loading: () => <div className="empty-canvas">Loading PDF…</div>,
 });
 
 type Toast = { id: number; message: string };
@@ -67,8 +67,8 @@ function FieldList() {
     <aside className="panel panel-left" aria-label="Mapped fields">
       <div className="panel-heading">
         <div>
-          <div className="eyebrow">Template map</div>
-          <h2 className="panel-title">{fields.length} mapped fields</h2>
+          <div className="eyebrow">Fields</div>
+          <h2 className="panel-title">{fields.length} fields</h2>
         </div>
       </div>
       <ul className="field-list">
@@ -98,7 +98,7 @@ function FieldList() {
       {fields.length === 0 && (
         <div className="empty-inspector">
           <strong>No fields yet</strong>
-          Drag over a box on the PDF to create your first mapping.
+          Draw a box on the PDF to add one.
         </div>
       )}
     </aside>
@@ -126,8 +126,7 @@ function Inspector() {
         </div>
         <div className="empty-inspector">
           <strong>Select or draw a field</strong>
-          Choose a mapped field or drag across the form to inspect its binding
-          and appearance.
+          Click a field in the list, or draw one on the PDF.
         </div>
       </aside>
     );
@@ -408,11 +407,10 @@ function DataWorkspace({ notify }: { notify: (message: string) => void }) {
   return (
     <main id="workspace-main" className="data-mode">
       <section className="data-editor">
-        <div className="eyebrow">Source document</div>
+        <div className="eyebrow">Data</div>
         <h1 className="editorial-heading">Taxpayer data</h1>
         <p className="supporting-copy">
-          Edit the nested JSON used by every field binding. Valid changes update
-          the preview immediately and remain on this device.
+          JSON used by the field bindings. Edits stay in this browser.
         </p>
         <textarea
           className="textarea"
@@ -431,15 +429,14 @@ function DataWorkspace({ notify }: { notify: (message: string) => void }) {
             fontSize: 11,
           }}
         >
-          {error ?? "Valid JSON · preview synchronized"}
+          {error ?? "Valid JSON"}
         </div>
       </section>
       <section className="data-paths">
-        <div className="eyebrow">RFC 6901</div>
+        <div className="eyebrow">Pointers</div>
         <h2 className="editorial-heading">Available bindings</h2>
         <p className="supporting-copy">
-          These deterministic pointers can address objects and array entries.
-          Click one to copy it into your clipboard.
+          Click a path to copy it. Uses JSON Pointer syntax.
         </p>
         <div className="path-list">
           {leaves.map((leaf) => (
@@ -517,7 +514,7 @@ export default function FormStudio() {
     if (stored.kind === "upload") {
       void loadPdf(stored.storageKey).then((blob) => {
         if (blob) setPdfFile(blob);
-        else notify("Uploaded PDF is missing; re-link it to continue.");
+        else notify("Uploaded PDF missing - pick it again.");
       });
     }
     const unsubscribe = useAnnotationStore.subscribe(() => persistWorkspace());
@@ -593,7 +590,7 @@ export default function FormStudio() {
       const source = await sourceArrayBuffer();
       const output = await createFilledPdf(source, template, data);
       downloadBytes(output, `${template.form.id}-filled.pdf`);
-      notify("Filled PDF downloaded");
+      notify("Downloaded filled PDF");
     } catch (error) {
       notify(error instanceof Error ? error.message : "PDF export failed");
     } finally {
@@ -609,7 +606,7 @@ export default function FormStudio() {
             <div className="brand-mark" aria-hidden="true">i</div>
             <div>
               <div className="brand-name">Form Studio</div>
-              <div className="brand-subtitle">Instead systems prototype</div>
+              <div className="brand-subtitle">Instead take-home</div>
             </div>
           </div>
           <nav className="mode-switcher" aria-label="Workspace mode">
@@ -627,7 +624,7 @@ export default function FormStudio() {
           </nav>
           <div className="topbar-actions">
             <span className="status-pill">
-              <span className="status-dot" /> Local only · autosaved
+              <span className="status-dot" /> Saved locally
             </span>
             <button
               type="button"
@@ -712,7 +709,7 @@ export default function FormStudio() {
                     onClick={() => {
                       resetSample();
                       setPdfFile("/forms/f1040-2025.pdf");
-                      notify("Sample project restored");
+                      notify("Reset to sample");
                     }}
                   >
                     <RotateCcw size={15} /> Reset
@@ -774,11 +771,11 @@ export default function FormStudio() {
 
       <section className="mobile-notice">
         <div className="mobile-notice-inner">
-          <div className="eyebrow">Desktop workspace</div>
-          <h1 className="editorial-heading">Give the form room to breathe.</h1>
+          <div className="eyebrow">Desktop only</div>
+          <h1 className="editorial-heading">Needs a wider screen</h1>
           <p className="supporting-copy">
-            Form Studio is optimized for precise tax-form mapping on screens at
-            least 780px wide.
+            Open this on a display at least 780px wide. The PDF canvas and
+            side panels do not fit well on phones.
           </p>
         </div>
       </section>
@@ -804,7 +801,7 @@ export default function FormStudio() {
             source: { kind: "upload", fileName: file.name, storageKey },
             pageCount: 1,
           });
-          notify("PDF loaded locally. Draw a field to begin.");
+          notify("PDF loaded.");
           event.target.value = "";
         }}
       />
@@ -826,7 +823,7 @@ export default function FormStudio() {
               const blob = await loadPdf(value.form.source.storageKey);
               if (blob) setPdfFile(blob);
             }
-            notify("Template imported and validated");
+            notify("Template imported");
           } catch (error) {
             notify(error instanceof Error ? error.message : "Invalid template");
           }

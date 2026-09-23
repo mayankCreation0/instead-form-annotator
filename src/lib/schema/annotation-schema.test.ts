@@ -16,7 +16,7 @@ describe("annotation template schema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("rejects pixel-like geometry outside normalized bounds", () => {
+  it("rejects out-of-range geometry", () => {
     const result = annotationTemplateSchema.safeParse({
       ...fixture,
       fields: [
