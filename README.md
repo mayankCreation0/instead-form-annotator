@@ -139,10 +139,9 @@ npm run test:e2e
 - **Draw text with pdf-lib** — works even when the PDF has no AcroForm fields
 - **Client-only documents** — PII stays in the browser for this exercise
 
-## Limitations / future enhancements
+## Future enhancements
 
-Not built: repeat groups, conditional fields, shared templates, OCR
-suggestions, native AcroForm writing. See the spec for details.
+Possible future extensions include repeatable field groups, conditional fields, shared/versioned templates, OCR-assisted annotation, and native AcroForm support.
 
 ## Video walkthrough
 
